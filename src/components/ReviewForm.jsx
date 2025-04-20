@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import ReviewOutput from "@/components/components/ReviewOutput";
-import FileUpload from "@/components/FileUpload";
+import FileUpload from "@/components/components/FileUpload";
 
 export default function ReviewForm() {
   const [reviewType, setReviewType] = useState("initial");
