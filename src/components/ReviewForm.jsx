@@ -1,4 +1,13 @@
+// rapidnote-frontend/src/components/ReviewForm.jsx
+
 import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import ReviewOutput from "@/components/ReviewOutput";
+import FileUpload from "@/components/FileUpload";
 
 export default function ReviewForm() {
   const [reviewType, setReviewType] = useState("initial");
@@ -7,22 +16,22 @@ export default function ReviewForm() {
   const [requestedVisits, setRequestedVisits] = useState("");
   const [poc, setPoc] = useState("");
   const [priorNote, setPriorNote] = useState("");
+  const [uploadedFile, setUploadedFile] = useState(null);
   const [generatedReview, setGeneratedReview] = useState("");
 
   const handleGenerateReview = async () => {
-const response = await fetch("https://rapidnote-backend.vercel.app/api/generate-review", {
+    const formData = new FormData();
+    formData.append("reviewType", reviewType);
+    formData.append("hpi", hpi);
+    formData.append("careHistory", careHistory);
+    formData.append("requestedVisits", requestedVisits);
+    formData.append("poc", poc);
+    formData.append("priorNote", priorNote);
+    if (uploadedFile) formData.append("file", uploadedFile);
+
+    const response = await fetch("https://rapidnote-backend.vercel.app/api/generate-review", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        reviewType,
-        hpi,
-        careHistory,
-        requestedVisits,
-        poc,
-        priorNote,
-      }),
+      body: formData,
     });
 
     const data = await response.json();
@@ -31,57 +40,39 @@ const response = await fetch("https://rapidnote-backend.vercel.app/api/generate-
 
   return (
     <div className="space-y-4">
-      <label className="block font-semibold">Review Type</label>
-      <div className="flex gap-2">
-        <button
-          className={`px-4 py-2 rounded border ${reviewType === "initial" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setReviewType("initial")}
-          type="button"
-        >
-          Initial
-        </button>
-        <button
-          className={`px-4 py-2 rounded border ${reviewType === "subsequent" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setReviewType("subsequent")}
-          type="button"
-        >
-          Subsequent
-        </button>
-      </div>
+      <Label>Review Type</Label>
+      <ToggleGroup type="single" value={reviewType} onValueChange={setReviewType}>
+        <ToggleGroupItem value="initial">Initial</ToggleGroupItem>
+        <ToggleGroupItem value="subsequent">Subsequent</ToggleGroupItem>
+      </ToggleGroup>
 
       {reviewType === "initial" && (
         <>
-          <label className="block font-semibold">HPI</label>
-          <textarea className="w-full border p-2 rounded" value={hpi} onChange={(e) => setHpi(e.target.value)} />
-
-          <label className="block font-semibold">Care History</label>
-          <textarea className="w-full border p-2 rounded" value={careHistory} onChange={(e) => setCareHistory(e.target.value)} />
+          <Label>HPI</Label>
+          <Textarea value={hpi} onChange={(e) => setHpi(e.target.value)} />
+          <Label>Care History</Label>
+          <Textarea value={careHistory} onChange={(e) => setCareHistory(e.target.value)} />
         </>
       )}
 
       {reviewType === "subsequent" && (
         <>
-          <label className="block font-semibold">Prior Reviewer Note</label>
-          <textarea className="w-full border p-2 rounded" value={priorNote} onChange={(e) => setPriorNote(e.target.value)} />
+          <Label>Prior Reviewer Note</Label>
+          <Textarea value={priorNote} onChange={(e) => setPriorNote(e.target.value)} />
         </>
       )}
 
-      <label className="block font-semibold">Requested Visits</label>
-      <input className="w-full border p-2 rounded" value={requestedVisits} onChange={(e) => setRequestedVisits(e.target.value)} />
+      <Label>Requested Visits</Label>
+      <Input value={requestedVisits} onChange={(e) => setRequestedVisits(e.target.value)} />
 
-      <label className="block font-semibold">Plan of Care</label>
-      <input className="w-full border p-2 rounded" value={poc} onChange={(e) => setPoc(e.target.value)} />
+      <Label>Plan of Care</Label>
+      <Input value={poc} onChange={(e) => setPoc(e.target.value)} />
 
-      <button className="mt-4 px-6 py-2 bg-green-600 text-white rounded" onClick={handleGenerateReview}>
-        Generate Review
-      </button>
+      <FileUpload label="Attach Supporting Documents (PDF)" onFileSelect={setUploadedFile} />
 
-      {generatedReview && (
-        <div className="mt-6 p-4 border rounded bg-gray-50">
-          <h3 className="font-semibold mb-2">Generated Review:</h3>
-          <pre className="whitespace-pre-wrap text-sm">{generatedReview}</pre>
-        </div>
-      )}
+      <Button className="mt-4" onClick={handleGenerateReview}>Generate Review</Button>
+
+      <ReviewOutput review={generatedReview} />
     </div>
   );
 }
