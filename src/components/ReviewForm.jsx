@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import ReviewOutput from "@/components/ReviewOutput";
+import ReviewOutput from "@/components/components/ReviewOutput";
 import FileUpload from "@/components/FileUpload";
 
 export default function ReviewForm() {
