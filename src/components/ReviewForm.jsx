@@ -10,7 +10,7 @@ export default function ReviewForm() {
   const [generatedReview, setGeneratedReview] = useState("");
 
   const handleGenerateReview = async () => {
-    const response = await fetch("http://localhost:5001/api/generate-review", {
+const response = await fetch("https://rapidnote-backend.vercel.app/api/generate-review", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
