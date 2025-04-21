@@ -1,4 +1,4 @@
-// rapidnote-frontend/src/components/ReviewOutput.jsx
+// ----------- File: /src/components/ReviewOutput.jsx -----------
 
 export default function ReviewOutput({ review }) {
   if (!review) return null;
