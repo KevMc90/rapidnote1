@@ -9,6 +9,7 @@ import ReviewOutput from "./ReviewOutput";
 import FileUpload from "./FileUpload";
 
 export default function ReviewForm() {
+  const [evalText, setEvalText] = useState("");
   const [reviewType, setReviewType] = useState("initial");
   const [hpi, setHpi] = useState("");
   const [careHistory, setCareHistory] = useState("");
