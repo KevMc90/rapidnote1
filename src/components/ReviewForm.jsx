@@ -1,11 +1,10 @@
 // rapidnote-frontend/src/components/ReviewForm.jsx
 
 import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import ReviewOutput from "./ReviewOutput";
 import FileUpload from "./FileUpload";
 
@@ -49,28 +48,41 @@ export default function ReviewForm() {
       {reviewType === "initial" && (
         <>
           <Label>HPI</Label>
-          <Textarea value={hpi} onChange={(e) => setHpi(e.target.value)} />
+          <textarea
+            className="w-full border p-2 rounded"
+            value={hpi}
+            onChange={(e) => setHpi(e.target.value)}
+          />
           <Label>Care History</Label>
-          <Textarea value={careHistory} onChange={(e) => setCareHistory(e.target.value)} />
+          <textarea
+            className="w-full border p-2 rounded"
+            value={careHistory}
+            onChange={(e) => setCareHistory(e.target.value)}
+          />
         </>
       )}
 
       {reviewType === "subsequent" && (
         <>
           <Label>Prior Reviewer Note</Label>
-          <Textarea value={priorNote} onChange={(e) => setPriorNote(e.target.value)} />
+          <textarea
+            className="w-full border p-2 rounded"
+            value={priorNote}
+            onChange={(e) => setPriorNote(e.target.value)}
+          />
         </>
       )}
 
       <Label>Requested Visits</Label>
       <Input value={requestedVisits} onChange={(e) => setRequestedVisits(e.target.value)} />
-
       <Label>Plan of Care</Label>
       <Input value={poc} onChange={(e) => setPoc(e.target.value)} />
 
       <FileUpload label="Attach Supporting Documents (PDF)" onFileSelect={setUploadedFile} />
 
-      <Button className="mt-4" onClick={handleGenerateReview}>Generate Review</Button>
+      <Button className="mt-4" onClick={handleGenerateReview}>
+        Generate Review
+      </Button>
 
       <ReviewOutput review={generatedReview} />
     </div>
