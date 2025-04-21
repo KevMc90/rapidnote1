@@ -1,6 +1,9 @@
-// rapidnote-frontend/src/components/ReviewForm.jsx
-
 import { useState } from "react";
+import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import ReviewOutput from "./ReviewOutput";
 import FileUpload from "./FileUpload";
 
@@ -34,76 +37,38 @@ export default function ReviewForm() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <label className="font-semibold">Review Type</label>
-      <div className="flex gap-4">
-        <button
-          className={`px-4 py-2 rounded border ${reviewType === "initial" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
-          onClick={() => setReviewType("initial")}
-        >
-          Initial
-        </button>
-        <button
-          className={`px-4 py-2 rounded border ${reviewType === "subsequent" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
-          onClick={() => setReviewType("subsequent")}
-        >
-          Subsequent
-        </button>
-      </div>
+    <div className="space-y-4">
+      <Label>Review Type</Label>
+      <ToggleGroup type="single" value={reviewType} onValueChange={setReviewType}>
+        <ToggleGroupItem value="initial">Initial</ToggleGroupItem>
+        <ToggleGroupItem value="subsequent">Subsequent</ToggleGroupItem>
+      </ToggleGroup>
 
       {reviewType === "initial" && (
         <>
-          <label className="block font-semibold mt-4">HPI</label>
-          <textarea
-            className="w-full border p-2 rounded"
-            value={hpi}
-            onChange={(e) => setHpi(e.target.value)}
-          />
-
-          <label className="block font-semibold mt-4">Care History</label>
-          <textarea
-            className="w-full border p-2 rounded"
-            value={careHistory}
-            onChange={(e) => setCareHistory(e.target.value)}
-          />
+          <Label>HPI</Label>
+          <Textarea value={hpi} onChange={(e) => setHpi(e.target.value)} />
+          <Label>Care History</Label>
+          <Textarea value={careHistory} onChange={(e) => setCareHistory(e.target.value)} />
         </>
       )}
 
       {reviewType === "subsequent" && (
         <>
-          <label className="block font-semibold mt-4">Prior Reviewer Note</label>
-          <textarea
-            className="w-full border p-2 rounded"
-            value={priorNote}
-            onChange={(e) => setPriorNote(e.target.value)}
-          />
+          <Label>Prior Reviewer Note</Label>
+          <Textarea value={priorNote} onChange={(e) => setPriorNote(e.target.value)} />
         </>
       )}
 
-      <label className="block font-semibold mt-4">Requested Visits</label>
-      <input
-        type="text"
-        className="w-full border p-2 rounded"
-        value={requestedVisits}
-        onChange={(e) => setRequestedVisits(e.target.value)}
-      />
+      <Label>Requested Visits</Label>
+      <Input value={requestedVisits} onChange={(e) => setRequestedVisits(e.target.value)} />
 
-      <label className="block font-semibold mt-4">Plan of Care</label>
-      <input
-        type="text"
-        className="w-full border p-2 rounded"
-        value={poc}
-        onChange={(e) => setPoc(e.target.value)}
-      />
+      <Label>Plan of Care</Label>
+      <Input value={poc} onChange={(e) => setPoc(e.target.value)} />
 
       <FileUpload label="Attach Supporting Documents (PDF)" onFileSelect={setUploadedFile} />
 
-      <button
-        onClick={handleGenerateReview}
-        className="mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        Generate Review
-      </button>
+      <Button className="mt-4" onClick={handleGenerateReview}>Generate Review</Button>
 
       <ReviewOutput review={generatedReview} />
     </div>
