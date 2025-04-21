@@ -1,5 +1,5 @@
-// ----------- File: /src/components/ReviewForm.jsx -----------
-
+// ---------- File: /src/components/ReviewForm.jsx ----------
+import { useState, useRef } from "react";
 import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
