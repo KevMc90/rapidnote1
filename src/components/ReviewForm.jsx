@@ -18,24 +18,25 @@ export default function ReviewForm() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [generatedReview, setGeneratedReview] = useState("");
 
-  const handleGenerateReview = async () => {
-    const formData = new FormData();
-    formData.append("reviewType", reviewType);
-    formData.append("hpi", hpi);
-    formData.append("careHistory", careHistory);
-    formData.append("requestedVisits", requestedVisits);
-    formData.append("poc", poc);
-    formData.append("priorNote", priorNote);
-    if (uploadedFile) formData.append("file", uploadedFile);
+const handleGenerateReview = async () => {
+  const formData = new FormData();
+  formData.append("reviewType", reviewType);
+  formData.append("hpi", hpi);
+  formData.append("careHistory", careHistory);
+  formData.append("requestedVisits", requestedVisits);
+  formData.append("poc", poc);
+  formData.append("priorNote", priorNote);
+  formData.append("evalText", evalText);
+  if (uploadedFile) formData.append("file", uploadedFile);
 
-    const response = await fetch("https://rapidnote-backend.vercel.app/api/generate-review", {
-      method: "POST",
-      body: formData,
-    });
+  const response = await fetch("https://rapidnote-backend.onrender.com/api/generate-review", {
+    method: "POST",
+    body: formData,
+  });
 
-    const data = await response.json();
-    setGeneratedReview(data.review);
-  };
+  const data = await response.json();
+  setGeneratedReview(data.review);
+};
 
   return (
     <div className="space-y-4">
