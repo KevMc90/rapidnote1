@@ -1,8 +1,6 @@
-// rapidnote-frontend/src/components/FileUpload.jsx
+// ----------- File: /src/components/FileUpload.jsx -----------
 
 import { useRef } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 
 export default function FileUpload({ label, onFileSelect }) {
   const fileInputRef = useRef(null);
@@ -18,13 +16,14 @@ export default function FileUpload({ label, onFileSelect }) {
   };
 
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <Input
-        ref={fileInputRef}
+    <div className="mt-4">
+      <label className="block font-semibold">{label}</label>
+      <input
         type="file"
-        accept=".pdf"
+        ref={fileInputRef}
+        accept="application/pdf"
         onChange={handleFileChange}
+        className="mt-1"
       />
     </div>
   );
