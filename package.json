@@ -17,7 +17,4 @@
     "ajv-keywords": "5.1.0"
   },
   "overrides": {
-    "ajv": "8.11.0",
-    "ajv-keywords": "5.1.0"
-  },
-  "browserslist": {
+    "
