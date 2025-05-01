@@ -10,6 +10,7 @@ function App() {
   const [file, setFile] = useState(null);
   const [priorNote, setPriorNote] = useState("");
   const [review, setReview] = useState("");
+  const [metrics, setMetrics] = useState(null);
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -33,6 +34,21 @@ function App() {
       setReview(response.data.review);
     } catch (err) {
       setReview("Error generating review: " + err.message);
+    }
+  };
+
+  const handlePreview = async () => {
+    const formData = new FormData();
+    if (file) formData.append("file", file);
+
+    try {
+      const res = await axios.post("https://rapidnote-backend.onrender.com/api/preview-metrics", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setMetrics(res.data.metrics);
+    } catch (error) {
+      setMetrics(null);
+      alert("Preview failed: " + error.message);
     }
   };
 
@@ -69,7 +85,17 @@ function App() {
         />
       )}
 
-      <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Review</button>
+      <div className="flex gap-3">
+        <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Review</button>
+        <button onClick={handlePreview} className="bg-gray-600 text-white px-4 py-2 rounded">Preview Metrics</button>
+      </div>
+
+      {metrics && (
+        <div className="mt-6 whitespace-pre-wrap border p-4 bg-gray-100">
+          <h2 className="text-xl font-semibold mb-2">Parsed Preview</h2>
+          <pre>{JSON.stringify(metrics, null, 2)}</pre>
+        </div>
+      )}
 
       {review && (
         <div className="mt-6 whitespace-pre-wrap border p-4 bg-gray-50">
