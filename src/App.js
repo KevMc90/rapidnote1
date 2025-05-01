@@ -91,9 +91,45 @@ function App() {
       </div>
 
       {metrics && (
-        <div className="mt-6 whitespace-pre-wrap border p-4 bg-gray-100">
-          <h2 className="text-xl font-semibold mb-2">Parsed Preview</h2>
-          <pre>{JSON.stringify(metrics, null, 2)}</pre>
+        <div className="mt-6 border p-4 bg-gray-100 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-2">Parsed Metrics Preview</h2>
+
+          <div className="grid sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              <h3 className="font-semibold">ROM</h3>
+              <ul className="list-disc list-inside">
+                {Object.entries(metrics.rom).map(([k, v]) => (
+                  <li key={k}>{k}: {v}°</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold">MMT</h3>
+              <ul className="list-disc list-inside">
+                {Object.keys(metrics.mmt).map((grade) => (
+                  <li key={grade}>{grade}/5</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold">Pain</h3>
+              <p>{metrics.pain}/10</p>
+            </div>
+
+            <div className="col-span-2">
+              <h3 className="font-semibold">Functional Limitations</h3>
+              <p>{metrics.function || "None detected"}</p>
+            </div>
+
+            <div className="col-span-2">
+              <h3 className="font-semibold">Goals</h3>
+              <ul className="list-disc list-inside">
+                {metrics.goals.length > 0 ? metrics.goals.map((g, i) => <li key={i}>{g}</li>) : <li>No goals extracted</li>}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 
