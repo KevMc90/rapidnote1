@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API_BASE =
+  process.env.REACT_APP_API_BASE ||
+  process.env.NEXT_PUBLIC_API_BASE ||
+  "https://rapidnote-backend.onrender.com";
+
 function App() {
   const [reviewType, setReviewType] = useState("initial");
   const [hpi, setHpi] = useState("");
@@ -11,44 +16,99 @@ function App() {
   const [priorNote, setPriorNote] = useState("");
   const [review, setReview] = useState("");
   const [metrics, setMetrics] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const buildFormData = () => {
+    const formData = new FormData();
+
+    // REQUIRED: backend expects this upload field name
+    formData.append("file", file);
+
+    // IMPORTANT: send fields as multipart form fields (not query params)
+    formData.append("reviewType", reviewType);
+    formData.append("hpi", hpi.trim());
+    formData.append("careHistory", careHistory.trim());
+    formData.append("requestedVisits", String(parseInt(requestedVisits || "0", 10)));
+    formData.append("poc", poc.trim());
+
+    if (reviewType === "subsequent") {
+      formData.append("priorNote", priorNote.trim());
+    }
+
+    return formData;
+  };
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    if (file) formData.append("file", file);
+    setError("");
+    setReview("");
+    setMetrics(null);
 
+    if (!file) {
+      setError("PDF is required.");
+      return;
+    }
+    if (!requestedVisits) {
+      setError("Requested Visits is required.");
+      return;
+    }
+    if (!poc.trim()) {
+      setError("Plan of Care is required (example: 2x6).");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await axios.post("https://rapidnote-backend.onrender.com/api/generate-review", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        params: {
-          reviewType,
-          hpi: hpi.trim(),
-          careHistory: careHistory.trim(),
-          requestedVisits: parseInt(requestedVisits),
-          poc: poc.trim(),
-          priorNote: priorNote.trim()
-        }
-      });
+      const formData = buildFormData();
 
-      setReview(response.data.review);
+      const response = await axios.post(
+        `${API_BASE}/api/generate-review`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      setReview(response.data.review || "");
     } catch (err) {
-      setReview("Error generating review: " + err.message);
+      // Show friendly backend message if present
+      const backendMsg = err?.response?.data?.error;
+      setError(backendMsg ? backendMsg : `Error generating review: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePreview = async () => {
-    const formData = new FormData();
-    if (file) formData.append("file", file);
+    setError("");
+    setMetrics(null);
 
+    if (!file) {
+      setError("PDF is required to preview metrics.");
+      return;
+    }
+
+    // NOTE: Your backend code you pasted does NOT include /api/preview-metrics.
+    // This keeps the button but shows a clear message if endpoint is missing.
+    setLoading(true);
     try {
-      const res = await axios.post("https://rapidnote-backend.onrender.com/api/preview-metrics", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await axios.post(
+        `${API_BASE}/api/preview-metrics`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
       setMetrics(res.data.metrics);
-    } catch (error) {
-      setMetrics(null);
-      alert("Preview failed: " + error.message);
+    } catch (err) {
+      const backendMsg = err?.response?.data?.error;
+      setError(
+        backendMsg
+          ? backendMsg
+          : "Preview endpoint not available yet. (Backend needs /api/preview-metrics implemented.)"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,22 +118,52 @@ function App() {
 
       <div className="mb-3">
         <label className="block font-semibold">Review Type</label>
-        <select value={reviewType} onChange={(e) => setReviewType(e.target.value)} className="border px-2 py-1">
+        <select
+          value={reviewType}
+          onChange={(e) => setReviewType(e.target.value)}
+          className="border px-2 py-1"
+        >
           <option value="initial">Initial</option>
           <option value="subsequent">Subsequent</option>
         </select>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <input placeholder="HPI" value={hpi} onChange={(e) => setHpi(e.target.value)} className="border p-2" />
-        <input placeholder="Care History" value={careHistory} onChange={(e) => setCareHistory(e.target.value)} className="border p-2" />
-        <input placeholder="Requested Visits" type="number" value={requestedVisits} onChange={(e) => setRequestedVisits(e.target.value)} className="border p-2" />
-        <input placeholder="Plan of Care (e.g. 2x6)" value={poc} onChange={(e) => setPoc(e.target.value)} className="border p-2" />
+        <input
+          placeholder="HPI"
+          value={hpi}
+          onChange={(e) => setHpi(e.target.value)}
+          className="border p-2"
+        />
+        <input
+          placeholder="Care History"
+          value={careHistory}
+          onChange={(e) => setCareHistory(e.target.value)}
+          className="border p-2"
+        />
+        <input
+          placeholder="Requested Visits"
+          type="number"
+          value={requestedVisits}
+          onChange={(e) => setRequestedVisits(e.target.value)}
+          className="border p-2"
+        />
+        <input
+          placeholder="Plan of Care (e.g. 2x6)"
+          value={poc}
+          onChange={(e) => setPoc(e.target.value)}
+          className="border p-2"
+        />
       </div>
 
       <div className="my-3">
-        <label className="block font-semibold">Attach Supporting Documents (PDF)</label>
-        <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0])} className="block" />
+        <label className="block font-semibold">Attach Supporting Documents (PDF) *</label>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setFile(e.target.files[0] || null)}
+          className="block"
+        />
       </div>
 
       {reviewType === "subsequent" && (
@@ -85,9 +175,28 @@ function App() {
         />
       )}
 
+      {error && (
+        <div className="my-3 border border-red-300 bg-red-50 text-red-800 p-3 rounded">
+          {error}
+        </div>
+      )}
+
       <div className="flex gap-3">
-        <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">Generate Review</button>
-        <button onClick={handlePreview} className="bg-gray-600 text-white px-4 py-2 rounded">Preview Metrics</button>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded"
+        >
+          {loading ? "Working..." : "Generate Review"}
+        </button>
+
+        <button
+          onClick={handlePreview}
+          disabled={loading}
+          className="bg-gray-600 disabled:opacity-50 text-white px-4 py-2 rounded"
+        >
+          {loading ? "Working..." : "Preview Metrics"}
+        </button>
       </div>
 
       {metrics && (
@@ -126,7 +235,9 @@ function App() {
             <div className="col-span-2">
               <h3 className="font-semibold">Goals</h3>
               <ul className="list-disc list-inside">
-                {metrics.goals.length > 0 ? metrics.goals.map((g, i) => <li key={i}>{g}</li>) : <li>No goals extracted</li>}
+                {metrics.goals?.length > 0
+                  ? metrics.goals.map((g, i) => <li key={i}>{g}</li>)
+                  : <li>No goals extracted</li>}
               </ul>
             </div>
           </div>
