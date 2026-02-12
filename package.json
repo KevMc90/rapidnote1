@@ -2,6 +2,9 @@
   "name": "rapidnote-frontend",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "react-scripts start",
     "build": "react-scripts build",
@@ -13,12 +16,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "ajv": "6.12.6",
-    "ajv-keywords": "3.5.2"
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0"
   },
   "overrides": {
-    "ajv": "6.12.6",
-    "ajv-keywords": "3.5.2"
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0"
   },
   "browserslist": {
     "production": [
